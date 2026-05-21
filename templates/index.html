@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudentMind AI — Predicción de Riesgo Estudiantil</title>
+  <!-- Fuentes externas y estilos CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <!-- BACKGROUND: elementos decorativos del fondo -->
+  <div class="bg-mesh"></div>
+  <div class="bg-grid"></div>
+
+  <!-- NAV: barra de navegación superior con logo -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="14" stroke="url(#lg1)" stroke-width="2"/>
+            <path d="M10 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="url(#lg1)" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="16" cy="20" r="2" fill="url(#lg1)"/>
+            <path d="M16 18v-4" stroke="url(#lg1)" stroke-width="1.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="lg1" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6ee7f7"/>
+                <stop offset="1" stop-color="#a78bfa"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">StudentMind<span class="logo-ai">AI</span></span>
+      </div>
+      <div class="nav-badge">v2.4 · ML + GenAI</div>
+    </div>
+  </nav>
+
+  <!-- HERO: introducción del proyecto y métricas clave -->
+  <section class="hero">
+    <div class="hero-tag">
+      <span class="tag-dot"></span>
+      Sistema Clínico-Académico · Machine Learning + IA Generativa
+    </div>
+    <h1 class="hero-title">
+      Detecta el riesgo<br/>
+      <span class="gradient-text">antes de que sea tarde</span>
+    </h1>
+    <p class="hero-sub">
+      Análisis predictivo de salud mental estudiantil con modelos entrenados sobre
+      <strong>27,901 estudiantes</strong>.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-pill">
+        <span class="stat-num">82.8%</span>
+        <span class="stat-lbl">Accuracy</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-num">27.9K</span>
+        <span class="stat-lbl">Muestras</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-num">1</span>
+        <span class="stat-lbl">Modelo ML</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-num">10</span>
+        <span class="stat-lbl">Variables</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM: formulario que envía datos a Flask en /predict -->
+  <section class="form-section" id="form-section">
+    <div class="form-container">
+
+      <div class="form-header">
+        <div class="form-icon">🧠</div>
+        <h2>Evaluación Estudiantil</h2>
+        <p>Completa el formulario para obtener tu análisis personalizado</p>
+      </div>
+
+      <form id="prediction-form" action="/predict" method="POST">
+
+        <!-- ROW 1: edad y género -->
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label>Edad</label>
+            <div class="input-wrap">
+              <input type="number" name="age" min="15" max="35" placeholder="Ej: 22" required />
+              <span class="field-icon">🎂</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Género</label>
+            <div class="select-wrap">
+              <select name="gender" required>
+                <option value="" disabled selected>Seleccionar</option>
+                <option value="Male">Masculino</option>
+                <option value="Female">Femenino</option>
+                <option value="Other">Otro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROW 2: CGPA y horas de estudio/trabajo -->
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label>CGPA (Promedio Académico)</label>
+            <div class="input-wrap">
+              <input type="number" name="cgpa" min="0" max="10" step="0.1" placeholder="Ej: 7.5" required />
+              <span class="field-icon">📊</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Horas de Estudio/Trabajo por día</label>
+            <div class="input-wrap">
+              <input type="number" name="work_study_hours" min="0" max="24" placeholder="Ej: 8" required />
+              <span class="field-icon">⏱️</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDERS: presión académica y estrés financiero -->
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label>Presión Académica <span class="slider-val" id="ap-val">3</span>/5</label>
+            <input type="range" name="academic_pressure" min="1" max="5" value="3"
+              class="slider" id="academic-slider"
+              oninput="document.getElementById('ap-val').textContent=this.value" />
+            <div class="slider-labels"><span>Baja</span><span>Alta</span></div>
+          </div>
+
+          <div class="field-group">
+            <label>Estrés Financiero <span class="slider-val" id="fs-val">3</span>/5</label>
+            <input type="range" name="financial_stress" min="1" max="5" value="3"
+              class="slider" id="financial-slider"
+              oninput="document.getElementById('fs-val').textContent=this.value" />
+            <div class="slider-labels"><span>Bajo</span><span>Alto</span></div>
+          </div>
+        </div>
+
+        <!-- ROW 3: sueño y hábitos alimenticios -->
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label>Horas de Sueño por noche</label>
+            <div class="input-wrap">
+              <input type="number" name="sleep_duration" min="2" max="12" step="0.5" placeholder="Ej: 7" required />
+              <span class="field-icon">🌙</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Hábitos Alimenticios</label>
+            <div class="select-wrap">
+              <select name="dietary_habits" required>
+                <option value="" disabled selected>Seleccionar</option>
+                <option value="Healthy">Saludables</option>
+                <option value="Moderate">Moderados</option>
+                <option value="Unhealthy">No saludables</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROW 4: toggles de historial familiar y pensamientos suicidas -->
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label>Historia Familiar de Enfermedades Mentales</label>
+            <div class="toggle-group" data-name="family_history">
+              <button type="button" class="toggle-btn" data-value="No">No</button>
+              <button type="button" class="toggle-btn" data-value="Yes">Sí</button>
+              <input type="hidden" name="family_history" value="No" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>¿Ha tenido pensamientos suicidas alguna vez?</label>
+            <div class="toggle-group" data-name="suicidal_thoughts">
+              <button type="button" class="toggle-btn" data-value="No">No</button>
+              <button type="button" class="toggle-btn" data-value="Yes">Sí</button>
+              <input type="hidden" name="suicidal_thoughts" value="No" />
+            </div>
+          </div>
+        </div>
+
+        <!-- MODELO: selector visual de Random Forest -->
+        <div class="field-group model-selector">
+          <label>Modelo de Machine Learning</label>
+          <div class="model-cards">
+            <label class="model-card active" for="rf">
+              <input type="radio" name="modelo" id="rf" value="random_forest" checked />
+              <div class="model-card-inner">
+                <div class="model-icon">🌲</div>
+                <div class="model-name">Random Forest</div>
+                <div class="model-desc">Ensemble de árboles de decisión · Alta interpretabilidad</div>
+                <div class="model-badge">Recomendado</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- BOTÓN: enviar formulario -->
+        <button type="submit" class="btn-predict" id="submit-btn">
+          <span class="btn-text">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/><path d="M12 8v4l3 3"/></svg>
+            Analizar con IA
+          </span>
+          <span class="btn-loader hidden">
+            <span class="spinner"></span>
+            Procesando con ML...
+          </span>
+        </button>
+
+        <p class="form-disclaimer">
+          🔒 Datos procesados localmente. No se almacena información personal.
+          Este sistema es orientativo y no reemplaza diagnóstico clínico profesional.
+        </p>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- FEATURES: explica a grandes rasgos qué hace la app -->
+  <section class="features-section">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feat-icon">⚡</div>
+        <h3>Predicción en tiempo real</h3>
+        <p>Resultados instantáneos con modelos ML pre-entrenados y optimizados.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon">🔬</div>
+        <h3>Modelo validado</h3>
+        <p>Random Forest entrenado en datos reales universitarios.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🛡️</div>
+        <h3>Privacidad total</h3>
+        <p>Sin almacenamiento de datos. Procesamiento completamente local.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER: nota legal y cierre -->
+  <footer class="footer">
+    <div class="footer-logo">StudentMind<span>AI</span></div>
+    <p>Sistema de apoyo académico · No reemplaza atención psicológica profesional</p>
+    <p class="footer-small">Si estás en crisis, llama a tu línea de salud mental local.</p>
+  </footer>
+
+  <!-- Script de interacción del UI -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
